@@ -1,0 +1,230 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="AI Company — 5 AI agents build your entire startup automatically.">
+    <title>AI Company</title>
+    <link rel="icon"
+        href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🏢</text></svg>">
+    <link rel="stylesheet" href="css/style.css">
+</head>
+
+<body>
+
+    <!-- NAV -->
+    <nav class="navbar">
+        <a class="nav-brand" href="/"><span>🏢</span> AI Company</a>
+        <div class="nav-links">
+            <a href="#" class="active">Dashboard</a>
+            <a href="#results-section">Results</a>
+            <a href="https://github.com" target="_blank">GitHub</a>
+        </div>
+    </nav>
+
+    <div class="container">
+
+        <!-- HERO -->
+        <section class="hero">
+            <div class="hero-label">Multi-Agent Startup Engine</div>
+            <h1>Build your startup with<br>AI agents</h1>
+            <p>Describe an idea. Five AI agents CEO, Research, Developer, Marketing, Support will create everything
+                you need to launch.</p>
+        </section>
+
+        <div class="status-row">
+            <div class="health-pill idle" id="health-pill">Checking API status...</div>
+            <div class="status-chip" id="status-chip">Waiting for your idea.</div>
+        </div>
+
+        <!-- AGENTS -->
+        <div class="agents-row" id="agents-row">
+            <div class="agent-chip">
+                <div class="dot idle" id="d-ceo"></div>👔 CEO
+            </div>
+            <div class="agent-chip">
+                <div class="dot idle" id="d-research"></div>🔬 Research
+            </div>
+            <div class="agent-chip">
+                <div class="dot idle" id="d-dev"></div>💻 Developer
+            </div>
+            <div class="agent-chip">
+                <div class="dot idle" id="d-mkt"></div>📢 Marketing
+            </div>
+            <div class="agent-chip">
+                <div class="dot idle" id="d-support"></div>🎧 Support
+            </div>
+        </div>
+
+        <!-- INPUT -->
+        <div class="input-card" id="input-card">
+            <h2>🚀 What's your startup idea?</h2>
+            <p class="sub">Our agents will generate a business plan, market research, product code, marketing content,
+                and support docs.</p>
+            <textarea id="idea"
+                placeholder='e.g. "An AI platform that creates personalized study plans for college students"'></textarea>
+            <div class="examples">
+                <button onclick="fill(this)">AI study tools</button>
+                <button onclick="fill(this)">AI fitness coach</button>
+                <button onclick="fill(this)">Smart home SaaS</button>
+                <button onclick="fill(this)">Resume builder</button>
+                <button onclick="fill(this)">Food delivery app</button>
+            </div>
+            
+            <div class="model-select-wrapper" style="margin: 20px 0 10px;">
+                <label for="model" style="font-size: 0.85rem; color: #8b8fa3; margin-bottom: 8px; display: block; font-weight: 600;">🤖 Select AI Model:</label>
+                <select id="model" style="width: 100%; padding: 12px; background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.08); border-radius: 10px; color: #e8eaed; font-family: 'Inter', sans-serif; font-size: 0.95rem; outline: none; cursor: pointer;">
+                    <option value="nvidia/nemotron-3-ultra-550b-a55b">NVIDIA Nemotron 3 Ultra 550B (API Key Required)</option>
+                    <option value="openrouter/free">OpenRouter (Auto Free)</option>
+                    <option value="groq/llama-3.1-70b-versatile">Llama 3.1 70B (Groq Key Required)</option>
+                </select>
+            </div>
+            <div class="actions">
+                <button class="btn btn-primary" id="go" onclick="launch()">🚀 Launch Company</button>
+                <span class="hint">Takes ~2 min · Ctrl+Enter to launch</span>
+            </div>
+        </div>
+
+        <div class="history-card" id="history-card">
+            <div class="history-head">
+                <div>
+                    <h3>🕘 Recent runs</h3>
+                    <p class="sub">Review past jobs, reopen completed results, and keep track of your launch history.</p>
+                </div>
+                <button class="btn btn-outline btn-sm" onclick="loadHistory()">↻ Refresh</button>
+            </div>
+            <div class="history-body" id="history-body">
+                <div class="history-empty">No history yet. Run a startup idea to populate recent jobs.</div>
+            </div>
+        </div>
+
+        <!-- PROGRESS -->
+        <div class="progress-card" id="progress">
+            <div class="progress-top">
+                <h3>⏳ Agents are working...</h3>
+                <span class="progress-pct" id="pct">0%</span>
+            </div>
+            <div class="bar-track">
+                <div class="bar-fill" id="bar"></div>
+            </div>
+            <div class="step-list" id="steps">
+                <div class="step" id="s0"><span class="step-num">1</span>👔 CEO — Business strategy</div>
+                <div class="step" id="s1"><span class="step-num">2</span>🔬 Research — Market analysis</div>
+                <div class="step" id="s2"><span class="step-num">3</span>💻 Developer — Product & code</div>
+                <div class="step" id="s3"><span class="step-num">4</span>📢 Marketing — Campaigns</div>
+                <div class="step" id="s4"><span class="step-num">5</span>🎧 Support — FAQ & templates</div>
+            </div>
+        </div>
+
+        <!-- RESULTS -->
+        <div class="results" id="results-section">
+            <div class="results-head">
+                <h2>📊 Results <span class="badge-done">Complete</span></h2>
+                <button class="btn btn-outline btn-sm" onclick="reset()">↻ New idea</button>
+            </div>
+            <div class="job-meta" id="job-meta">
+                <span>Job ID: <strong id="job-id">—</strong></span>
+                <span>Idea: <strong id="job-idea">—</strong></span>
+            </div>
+
+            <div class="tabs" id="tabs">
+                <button class="tab-btn active" onclick="tab('ceo',this)">👔 CEO</button>
+                <button class="tab-btn" onclick="tab('research',this)">🔬 Research</button>
+                <button class="tab-btn" onclick="tab('dev',this)">💻 Dev</button>
+                <button class="tab-btn" onclick="tab('mkt',this)">📢 Marketing</button>
+                <button class="tab-btn" onclick="tab('support',this)">🎧 Support</button>
+            </div>
+
+            <!-- Panels -->
+            <div class="tab-panel active" id="p-ceo">
+                <div class="dept-card">
+                    <div class="dept-head">
+                        <div class="dept-info">
+                            <div class="dept-icon ceo">👔</div>
+                            <div>
+                                <div class="dept-title">Business Strategy</div>
+                                <div class="dept-tag">Vision · Roadmap · Revenue</div>
+                            </div>
+                        </div>
+                        <button class="btn btn-ghost btn-sm" onclick="dl('ceo')">📥 Download</button>
+                    </div>
+                    <div class="dept-body" id="c-ceo">—</div>
+                </div>
+            </div>
+            <div class="tab-panel" id="p-research">
+                <div class="dept-card">
+                    <div class="dept-head">
+                        <div class="dept-info">
+                            <div class="dept-icon research">🔬</div>
+                            <div>
+                                <div class="dept-title">Market Analysis</div>
+                                <div class="dept-tag">Competitors · SWOT · Sizing</div>
+                            </div>
+                        </div>
+                        <button class="btn btn-ghost btn-sm" onclick="dl('research')">📥 Download</button>
+                    </div>
+                    <div class="dept-body" id="c-research">—</div>
+                </div>
+            </div>
+            <div class="tab-panel" id="p-dev">
+                <div class="dept-card">
+                    <div class="dept-head">
+                        <div class="dept-info">
+                            <div class="dept-icon dev">💻</div>
+                            <div>
+                                <div class="dept-title">Product & Code</div>
+                                <div class="dept-tag">Architecture · MVP · Landing page</div>
+                            </div>
+                        </div>
+                        <button class="btn btn-ghost btn-sm" onclick="dl('dev')">📥 Download</button>
+                    </div>
+                    <div class="dept-body" id="c-dev">—</div>
+                </div>
+            </div>
+            <div class="tab-panel" id="p-mkt">
+                <div class="dept-card">
+                    <div class="dept-head">
+                        <div class="dept-info">
+                            <div class="dept-icon mkt">📢</div>
+                            <div>
+                                <div class="dept-title">Marketing & Content</div>
+                                <div class="dept-tag">Social · Ads · SEO</div>
+                            </div>
+                        </div>
+                        <button class="btn btn-ghost btn-sm" onclick="dl('mkt')">📥 Download</button>
+                    </div>
+                    <div class="dept-body" id="c-mkt">—</div>
+                </div>
+            </div>
+            <div class="tab-panel" id="p-support">
+                <div class="dept-card">
+                    <div class="dept-head">
+                        <div class="dept-info">
+                            <div class="dept-icon support">🎧</div>
+                            <div>
+                                <div class="dept-title">Customer Support</div>
+                                <div class="dept-tag">FAQ · Templates · Onboarding</div>
+                            </div>
+                        </div>
+                        <button class="btn btn-ghost btn-sm" onclick="dl('support')">📥 Download</button>
+                    </div>
+                    <div class="dept-body" id="c-support">—</div>
+                </div>
+            </div>
+
+            <button class="btn btn-ghost" style="width:100%;margin-top:16px" onclick="toggleFull()">📋 Full
+                report</button>
+            <div class="full-report" id="full-report"></div>
+        </div>
+
+        <footer class="footer">
+            Built with AI Company
+        </footer>
+    </div>
+
+    <div class="toast-box" id="toasts"></div>
+    <script src="js/app.js"></script>
+</body>
+
+</html>
