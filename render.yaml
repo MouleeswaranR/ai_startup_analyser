@@ -1,0 +1,19 @@
+services:
+  - type: web
+    name: ai-company-api
+    env: python
+    buildCommand: "pip install -r requirements.txt"
+    startCommand: "uvicorn api:app --host 0.0.0.0 --port $PORT"
+    envVars:
+      - key: PYTHON_VERSION
+        value: 3.11.0
+  - type: web
+    name: ai-company-dashboard
+    env: python
+    buildCommand: "pip install -r requirements-app.txt"
+    startCommand: "streamlit run app.py --server.port $PORT --server.address 0.0.0.0"
+    envVars:
+      - key: PYTHON_VERSION
+        value: 3.11.0
+      - key: API_URL
+        value: "https://ai-company-api.onrender.com" # Update this to your deployed API URL
