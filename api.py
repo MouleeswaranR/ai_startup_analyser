@@ -274,6 +274,11 @@ async def health_check():
     }
 
 
+@app.get("/health")
+async def simple_health():
+    return {"status": "ok"}
+
+
 @app.get("/")
 async def root():
     return FileResponse(os.path.join(FRONTEND_DIR, "index.html"))
