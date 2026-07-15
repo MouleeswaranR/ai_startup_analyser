@@ -6,9 +6,11 @@ micro-animations, and modern design to run the AI Company.
 """
 
 import os
+import re
 import time
 import requests
 import streamlit as st
+import streamlit.components.v1 as components
 from config import AVAILABLE_MODELS
 
 # ── Page Config ──────────────────────────────────────────
@@ -973,6 +975,13 @@ if st.session_state.results:
             """, unsafe_allow_html=True)
 
             st.markdown(content)
+
+            # Check if there are HTML code blocks and render them visually
+            html_matches = re.findall(r'```html\n(.*?)\n```', content, re.DOTALL | re.IGNORECASE)
+            for i, html_code in enumerate(html_matches):
+                st.markdown(f"**🖥️ Live HTML Preview ({i+1}):**")
+                components.html(html_code, height=600, scrolling=True)
+
 
             st.download_button(
                 label=f"📥 Download {cfg['name']} Report",
