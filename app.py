@@ -5,6 +5,7 @@ A stunning, premium dark-themed dashboard with glassmorphism,
 micro-animations, and modern design to run the AI Company.
 """
 
+import os
 import time
 import requests
 import streamlit as st
@@ -607,7 +608,7 @@ st.markdown("""
 
 
 # ── API Config ───────────────────────────────────────────
-API_URL = "http://localhost:8000"
+API_URL = os.getenv("API_URL", "http://localhost:8000")
 
 
 def api_available() -> bool:
