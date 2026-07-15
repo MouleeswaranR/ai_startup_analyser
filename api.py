@@ -274,7 +274,7 @@ async def health_check():
     }
 
 
-@app.get("/health")
+@app.api_route("/health", methods=["GET", "HEAD"])
 async def simple_health():
     return {"status": "ok"}
 
